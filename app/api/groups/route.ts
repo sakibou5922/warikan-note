@@ -1,7 +1,10 @@
 import { getDb } from "@/db";
 import { cleanName, jsonError, newId, serverError } from "@/lib/group-store";
+import { cors, OPTIONS } from "@/lib/cors";
 
-export async function POST(request: Request) {
+export { OPTIONS };
+
+export const POST = cors(async function post(request: Request) {
   let body: Record<string, unknown>;
   try { body = await request.json(); } catch { return jsonError("入力内容を確認してください。", 400); }
   const title = cleanName(body.title, 80);
@@ -17,4 +20,4 @@ export async function POST(request: Request) {
     ]);
     return Response.json({ id }, { status: 201 });
   } catch (error) { return serverError(error); }
-}
+});

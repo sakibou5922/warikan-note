@@ -7,12 +7,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { calculateSettlement, type Expense, type Member } from "@/lib/ledger";
+import { apiUrl, homeHref } from "@/lib/api-client";
 
 type Group = { id: string; title: string; members: Member[]; expenses: Expense[] };
 const yen = (value: number) => `¥${value.toLocaleString("ja-JP")}`;
 
 async function send<T = { ok?: boolean; error?: string }>(url: string, method: string, body?: unknown): Promise<T> {
-  const response = await fetch(url, { method, headers: body ? { "Content-Type": "application/json" } : undefined, body: body ? JSON.stringify(body) : undefined });
+  const response = await fetch(apiUrl(url), { method, headers: body ? { "Content-Type": "application/json" } : undefined, body: body ? JSON.stringify(body) : undefined });
   const result = await response.json() as T & { error?: string };
   if (!response.ok) throw new Error(result.error || "保存できませんでした。");
   return result;
@@ -73,10 +74,10 @@ export default function GroupClient({ id }: { id: string }) {
     try { await navigator.clipboard.writeText(window.location.href); setCopyDone(true); window.setTimeout(() => setCopyDone(false), 2500); }
     catch { setNotice("URLをコピーできませんでした。ブラウザのアドレス欄からコピーしてください。"); }
   }
-  if (loading) return <main className="site-shell"><header className="topbar"><a className="brand" href="/"><span className="brand-mark">÷</span> 割り勘ノート</a></header><p className="loading-message">読み込み中…</p></main>;
-  if (!group) return <main className="site-shell"><header className="topbar"><a className="brand" href="/"><span className="brand-mark">÷</span> 割り勘ノート</a></header><div className="error-panel"><h1>グループを開けませんでした</h1><p>{error}</p><Button onClick={() => void refresh()} className="primary-button">再読み込み</Button></div></main>;
+  if (loading) return <main className="site-shell"><header className="topbar"><a className="brand" href={homeHref()}><span className="brand-mark">÷</span> 割り勘ノート</a></header><p className="loading-message">読み込み中…</p></main>;
+  if (!group) return <main className="site-shell"><header className="topbar"><a className="brand" href={homeHref()}><span className="brand-mark">÷</span> 割り勘ノート</a></header><div className="error-panel"><h1>グループを開けませんでした</h1><p>{error}</p><Button onClick={() => void refresh()} className="primary-button">再読み込み</Button></div></main>;
   return <main className="site-shell">
-    <header className="topbar"><a className="brand" href="/"><span className="brand-mark">÷</span> 割り勘ノート</a><Button variant="outline" onClick={copyLink} className="share-button">{copyDone ? <Check size={16} /> : <Copy size={16} />}{copyDone ? "コピーしました" : "共有URLをコピー"}</Button></header>
+    <header className="topbar"><a className="brand" href={homeHref()}><span className="brand-mark">÷</span> 割り勘ノート</a><Button variant="outline" onClick={copyLink} className="share-button">{copyDone ? <Check size={16} /> : <Copy size={16} />}{copyDone ? "コピーしました" : "共有URLをコピー"}</Button></header>
     <div className="group-heading"><div><p className="eyebrow">SHARED GROUP</p><h1>{group.title}</h1><p><Users size={16} /> {group.members.length}人で精算</p></div></div>
     {notice && <div className="notice" role="alert">{notice}<button onClick={() => setNotice("")} aria-label="閉じる">×</button></div>}
     <div className="group-grid"><div className="group-main">

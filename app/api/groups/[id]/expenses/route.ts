@@ -1,9 +1,12 @@
 import { getDb } from "@/db";
 import { getGroup, jsonError, newId, serverError, validateExpense } from "@/lib/group-store";
+import { cors, OPTIONS } from "@/lib/cors";
+
+export { OPTIONS };
 
 type Context = { params: Promise<{ id: string }> };
 
-export async function POST(request: Request, context: Context) {
+export const POST = cors(async function post(request: Request, context: Context) {
   let body: Record<string, unknown>;
   try { body = await request.json(); } catch { return jsonError("入力内容を確認してください。", 400); }
   try {
@@ -19,4 +22,4 @@ export async function POST(request: Request, context: Context) {
     ]);
     return Response.json({ id }, { status: 201 });
   } catch (error) { return serverError(error); }
-}
+});

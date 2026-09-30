@@ -1,9 +1,12 @@
 import { getDb } from "@/db";
 import { getGroup, jsonError, serverError, validateExpense } from "@/lib/group-store";
+import { cors, OPTIONS } from "@/lib/cors";
+
+export { OPTIONS };
 
 type Context = { params: Promise<{ id: string; expenseId: string }> };
 
-export async function PATCH(request: Request, context: Context) {
+export const PATCH = cors(async function patch(request: Request, context: Context) {
   let body: Record<string, unknown>;
   try { body = await request.json(); } catch { return jsonError("入力内容を確認してください。", 400); }
   try {
@@ -20,9 +23,9 @@ export async function PATCH(request: Request, context: Context) {
     ]);
     return Response.json({ ok: true });
   } catch (error) { return serverError(error); }
-}
+});
 
-export async function DELETE(_request: Request, context: Context) {
+export const DELETE = cors(async function remove(_request: Request, context: Context) {
   try {
     const { id, expenseId } = await context.params;
     const group = await getGroup(id);
@@ -34,4 +37,4 @@ export async function DELETE(_request: Request, context: Context) {
     ]);
     return Response.json({ ok: true });
   } catch (error) { return serverError(error); }
-}
+});
