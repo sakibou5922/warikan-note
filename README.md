@@ -4,6 +4,7 @@
 
 - GitHub Pages: 画面を静的配信します（`gh-pages-src/`）。
 - Sites + D1: グループと支払いを保存するAPIを提供します（`app/api/`）。
+- 以前のSites画面URLはGitHub Pagesへ転送します。グループURLも引き続き使えます。
 - グループURLを知る人は、そのグループの支払いを閲覧・編集できます。
 
 ## 開発

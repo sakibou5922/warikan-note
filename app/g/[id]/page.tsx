@@ -1,5 +1,6 @@
-import GroupClient from "./group-client";
+import { redirect } from "next/navigation";
 
 export default async function GroupPage({ params }: { params: Promise<{ id: string }> }) {
-  return <GroupClient id={(await params).id} />;
+  const { id } = await params;
+  redirect(`https://sakibou5922.github.io/warikan-note/?g=${encodeURIComponent(id)}`);
 }
